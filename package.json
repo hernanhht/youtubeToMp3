@@ -1,0 +1,23 @@
+{
+  "name": "youtubeToMp3",
+  "version": "0.0.1",
+  "description": "youtubeToMp3 ============",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hernanhht/youtubeToMp3.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hernanhht/youtubeToMp3/issues"
+  },
+  "homepage": "https://github.com/hernanhht/youtubeToMp3",
+  "dependencies": {
+    "async": "^0.9.0",
+    "request": "^2.40.0"
+  }
+}
