@@ -20,7 +20,7 @@ program
     .option('-i, --input <env>', 'Required Input File. Every file line is a search string. It will download the first video it founds')
     .parse(process.argv);
 
-if (!process.input) {
+if (!program.input) {
     console.log("error: option `-i, --input <env>' argument missing");
     process.exit(1);
 }
@@ -46,9 +46,10 @@ var searchInYouTube = function (searchString, cb) {
 };
 
 var downloadMp3 = function (result, cb) {
-    var file = fs.createWriteStream(result.searchString + ".mp3");
+    var file = fs.createWriteStream(result.searchString + ".mp3"),
+        url = youTubeToMp3URL + result.url;
 
-    request(youTubeToMp3URL + result.url, function (err, response, fileUrl) {
+    request(url, function (err, response, fileUrl) {
         if (err) { return cb(err); }
 
         http.get(fileUrl, function (res) {
@@ -56,6 +57,7 @@ var downloadMp3 = function (result, cb) {
             res.pipe(file);
 
             res.on('end', function () {
+                console.log("Download Complete for: " + result.searchString);
                 cb();
             });
         });
