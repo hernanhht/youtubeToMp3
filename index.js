@@ -1,15 +1,34 @@
+/*jslint stupid:true */
 "use strict";
+var packagejson     = require("./package.json");
 var querystring     = require("querystring");
 var request         = require("request");
 var async           = require("async");
 var http            = require('http');
 var fs              = require('fs');
+var program         = require("commander");
 
-var regex = "href=\"/watch([^\"]*)\"";
+var videoHrefRegex = "href=\"/watch([^\"]*)\"";
 var youTubeUrl = "http://www.youtube.com";
 var youTubeToMp3URL = "http://youtubeinmp3.com/fetch/?video=";
 
 var searchArray = [];
+var inputFile;
+
+program
+    .version(packagejson.version)
+    .option('-i, --input <env>', 'Required Input File. Every file line is a search string. It will download the first video it founds')
+    .parse(process.argv);
+
+if (!process.input) {
+    console.log("error: option `-i, --input <env>' argument missing");
+    process.exit(1);
+}
+
+inputFile = fs.readFileSync(program.input).toString();
+searchArray = inputFile.split("\n").filter(function (s) {
+    return s !== "";
+});
 
 var searchInYouTube = function (searchString, cb) {
     var youTubeSearchUrl = youTubeUrl + "/results?" + querystring.stringify({"search_query": searchString});
@@ -17,11 +36,11 @@ var searchInYouTube = function (searchString, cb) {
     request(youTubeSearchUrl, function (err, response, body) {
         if (err) { return cb(err); }
 
-        var regexResults = body.match(regex),
-            path = regexResults[0], //href="/watch?v=T-sxSd1uwoU"
+        var regexResults = body.match(videoHrefRegex),
+            href = regexResults[0], //href="/watch?v=T-sxSd1uwoU"
             url;
 
-        url = path.replace("href=\"", youTubeUrl).replace("\"", "");
+        url = href.replace("href=\"", youTubeUrl).replace("\"", "");
         return cb(null, {searchString: searchString, url: url});
     });
 };
